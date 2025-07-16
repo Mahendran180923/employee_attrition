@@ -1,0 +1,10 @@
+artifact_location: file:///D:/Projects/Guvi/Employee_Attrition/mlruns/0/models/m-ea836a7838dd449199b7cf2429c516ed/artifacts
+creation_timestamp: 1752088579669
+experiment_id: '0'
+last_updated_timestamp: 1752088585517
+model_id: m-ea836a7838dd449199b7cf2429c516ed
+model_type: null
+name: rfc_model
+source_run_id: 1b8239fdfad14a77a6d2f2c906446348
+status: 2
+status_message: null

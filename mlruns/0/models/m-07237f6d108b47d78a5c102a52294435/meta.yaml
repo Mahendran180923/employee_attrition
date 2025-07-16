@@ -1,0 +1,10 @@
+artifact_location: file:///D:/Projects/Guvi/Employee_Attrition/mlruns/0/models/m-07237f6d108b47d78a5c102a52294435/artifacts
+creation_timestamp: 1752088590113
+experiment_id: '0'
+last_updated_timestamp: 1752088594580
+model_id: m-07237f6d108b47d78a5c102a52294435
+model_type: null
+name: dtc_model
+source_run_id: 1b8239fdfad14a77a6d2f2c906446348
+status: 2
+status_message: null

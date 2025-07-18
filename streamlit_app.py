@@ -7,6 +7,8 @@ from sklearn.preprocessing import LabelEncoder, OrdinalEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
 
 # --- Configuration ---
 st.set_page_config(page_title="Employee Analytics Dashboard", page_icon="�", layout="wide")
@@ -585,206 +587,253 @@ elif app_mode == "Analysis Dashboard":
         df_plot = df_raw.copy()
 
         # Set a consistent style for plots
-        sns.set_style("whitegrid")
-        plt.rcParams.update({'font.size': 10}) # Adjust font size for better readability
+        # sns.set_style("whitegrid") # No longer needed if all Matplotlib plots are removed
+        # plt.rcParams.update({'font.size': 10}) # No longer needed if all Matplotlib plots are removed
 
         st.markdown("##### Attrition Rate by Categories")
 
         col_viz_A1, col_viz_A2 = st.columns(2)
         with col_viz_A1:
-            # --- Plot 1: Overall Attrition Rate (Pie Chart) ---
-            fig1, ax1 = plt.subplots(figsize=(6, 6))
-            attrition_counts = df_plot['Attrition'].value_counts()
-            ax1.pie(attrition_counts, labels=attrition_counts.index, autopct='%1.1f%%', startangle=90, colors=['#66b3b3','#ff9999'])
-            ax1.set_title('Overall Attrition Rate')
-            ax1.axis('equal') # Equal aspect ratio ensures that pie is drawn as a circle.
-            st.pyplot(fig1)
-            plt.close(fig1) # Close the figure to free up memory
+            # --- Plot 1: Overall Attrition Rate (Pie Chart) - Plotly Express ---
+            attrition_counts = df_plot['Attrition'].value_counts().reset_index()
+            attrition_counts.columns = ['Attrition', 'Count']
+            fig1_px = px.pie(
+                attrition_counts,
+                values='Count',
+                names='Attrition',
+                title='Overall Attrition Rate',
+                color_discrete_sequence=['#66b3b3','#ff9999'] # Consistent colors
+            )
+            fig1_px.update_traces(textposition='inside', textinfo='percent+label')
+            st.plotly_chart(fig1_px, use_container_width=True)
 
-            # --- Plot 2: Attrition by Gender (Stacked Bar Chart) ---
-            fig2, ax2 = plt.subplots(figsize=(8, 5))
-            attrition_by_gender = df_plot.groupby('Gender')['Attrition'].value_counts(normalize=True).unstack() * 100
-            attrition_by_gender.plot(kind='bar', stacked=True, ax=ax2, cmap='Pastel1')
-            ax2.set_title('Attrition by Gender')
-            ax2.set_ylabel('Percentage')
-            ax2.set_xticks(ax2.get_xticks())
-            ax2.set_xticklabels(ax2.get_xticklabels(), rotation=0)
-            ax2.legend(title='Attrition')
-            st.pyplot(fig2)
-            plt.close(fig2)
+            # --- Plot 2: Attrition by Gender (Stacked Bar Chart) - Plotly Express ---
+            gender_attrition_counts = df_plot.groupby(['Gender', 'Attrition']).size().reset_index(name='Count')
+            gender_attrition_total = gender_attrition_counts.groupby('Gender')['Count'].transform('sum')
+            gender_attrition_counts['Percentage'] = (gender_attrition_counts['Count'] / gender_attrition_total) * 100
+
+            fig2_px = px.bar(
+                gender_attrition_counts,
+                x='Gender',
+                y='Percentage',
+                color='Attrition',
+                title='Attrition by Gender',
+                labels={'Percentage': 'Percentage of Employees'},
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}
+            )
+            fig2_px.update_layout(yaxis_range=[0, 100])
+            st.plotly_chart(fig2_px, use_container_width=True)
 
         with col_viz_A2:
-            # --- Plot 3: Attrition by Department (Stacked Bar Chart) ---
-            fig3, ax3 = plt.subplots(figsize=(10, 6))
-            attrition_by_department = df_plot.groupby('Department')['Attrition'].value_counts(normalize=True).unstack() * 100
-            attrition_by_department.plot(kind='bar', stacked=True, ax=ax3, cmap='Pastel1')
-            ax3.set_title('Attrition by Department')
-            ax3.set_ylabel('Percentage')
-            ax3.set_xticks(ax3.get_xticks())
-            ax3.set_xticklabels(ax3.get_xticklabels(), rotation=45, ha='right')
-            ax3.legend(title='Attrition')
-            st.pyplot(fig3)
-            plt.close(fig3)
+            # --- Plot 3: Attrition by Department (Stacked Bar Chart) - Plotly Express ---
+            dept_attrition_counts = df_plot.groupby(['Department', 'Attrition']).size().reset_index(name='Count')
+            dept_attrition_total = dept_attrition_counts.groupby('Department')['Count'].transform('sum')
+            dept_attrition_counts['Percentage'] = (dept_attrition_counts['Count'] / dept_attrition_total) * 100
 
-            # --- Plot 4: Attrition by JobRole (Stacked Bar Chart) ---
-            fig4, ax4 = plt.subplots(figsize=(12, 7))
-            attrition_by_jobrole = df_plot.groupby('JobRole')['Attrition'].value_counts(normalize=True).unstack() * 100
-            attrition_by_jobrole.plot(kind='bar', stacked=True, ax=ax4, cmap='Pastel1')
-            ax4.set_title('Attrition by Job Role')
-            ax4.set_ylabel('Percentage')
-            ax4.set_xticks(ax4.get_xticks())
-            ax4.set_xticklabels(ax4.get_xticklabels(), rotation=45, ha='right')
-            ax4.legend(title='Attrition')
-            st.pyplot(fig4)
-            plt.close(fig4)
+            fig3_px = px.bar(
+                dept_attrition_counts,
+                x='Department',
+                y='Percentage',
+                color='Attrition',
+                title='Attrition by Department',
+                labels={'Percentage': 'Percentage of Employees'},
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}
+            )
+            fig3_px.update_layout(yaxis_range=[0, 100])
+            st.plotly_chart(fig3_px, use_container_width=True)
 
-        col_viz_A3, col_viz_A4 = st.columns(2)
-        with col_viz_A3:
-            # --- Plot 5: Attrition by JobSatisfaction (Stacked Bar Chart) ---
-            fig5, ax5 = plt.subplots(figsize=(8, 5))
-            attrition_by_jobsatisfaction = df_plot.groupby('JobSatisfaction')['Attrition'].value_counts(normalize=True).unstack() * 100
-            attrition_by_jobsatisfaction.plot(kind='bar', stacked=True, ax=ax5, cmap='Pastel1')
-            ax5.set_title('Attrition by Job Satisfaction')
-            ax5.set_ylabel('Percentage')
-            ax5.set_xticks(ax5.get_xticks())
-            ax5.set_xticklabels(ax5.get_xticklabels(), rotation=0)
-            ax5.legend(title='Attrition')
-            st.pyplot(fig5)
-            plt.close(fig5)
+            # --- Plot 4: Attrition by Job Role (Stacked Bar Chart) - Plotly Express ---
+            jobrole_attrition_counts = df_plot.groupby(['JobRole', 'Attrition']).size().reset_index(name='Count')
+            jobrole_attrition_total = jobrole_attrition_counts.groupby('JobRole')['Count'].transform('sum')
+            jobrole_attrition_counts['Percentage'] = (jobrole_attrition_counts['Count'] / jobrole_attrition_total) * 100
 
-        with col_viz_A4:
-            # --- Plot 6: Attrition by WorkLifeBalance (Stacked Bar Chart) ---
-            fig6, ax6 = plt.subplots(figsize=(8, 5))
-            attrition_by_worklifebalance = df_plot.groupby('WorkLifeBalance')['Attrition'].value_counts(normalize=True).unstack() * 100
-            attrition_by_worklifebalance.plot(kind='bar', stacked=True, ax=ax6, cmap='Pastel1')
-            ax6.set_title('Attrition by Work-Life Balance')
-            ax6.set_ylabel('Percentage')
-            ax6.set_xticks(ax6.get_xticks())
-            ax6.set_xticklabels(ax6.get_xticklabels(), rotation=0)
-            ax6.legend(title='Attrition')
-            st.pyplot(fig6)
-            plt.close(fig6)
+            fig4_px = px.bar(
+                jobrole_attrition_counts,
+                x='JobRole',
+                y='Percentage',
+                color='Attrition',
+                title='Attrition by Job Role',
+                labels={'Percentage': 'Percentage of Employees'},
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}
+            )
+            fig4_px.update_layout(yaxis_range=[0, 100], xaxis_tickangle=-45) # Rotate labels for readability
+            st.plotly_chart(fig4_px, use_container_width=True)
 
-
-        st.markdown("##### Income and Tenure Analysis")
+        st.markdown("##### Attrition Distribution")
 
         col_viz_B1, col_viz_B2 = st.columns(2)
         with col_viz_B1:
-            # --- Plot 7: Attrition by MonthlyIncome (Binning and Stacked Bar Chart) ---
-            fig7, ax7 = plt.subplots(figsize=(10, 6))
-            df_plot['MonthlyIncome_Bin'] = pd.cut(df_plot['MonthlyIncome'], bins=5, labels=['Very Low', 'Low', 'Medium', 'High', 'Very High'])
-            attrition_by_monthlyincome = df_plot.groupby('MonthlyIncome_Bin')['Attrition'].value_counts(normalize=True).unstack() * 100
-            attrition_by_monthlyincome.plot(kind='bar', stacked=True, ax=ax7, cmap='Pastel1')
-            ax7.set_title('Attrition by Monthly Income Range') # Clarified title
-            ax7.set_ylabel('Percentage')
-            ax7.set_xticks(ax7.get_xticks())
-            ax7.set_xticklabels(ax7.get_xticklabels(), rotation=45, ha='right')
-            ax7.legend(title='Attrition')
-            st.pyplot(fig7)
-            plt.close(fig7)
+            # --- Plot 5: Attrition by Age Group (Histogram/Bar Chart) - Plotly Express ---
+            df_plot['AgeGroup'] = pd.cut(df_plot['Age'], bins=[18, 25, 35, 45, 55, 65],
+                                         labels=['18-24', '25-34', '35-44', '45-54', '55-64'], right=False)
+            
+            fig5_px = px.histogram(
+                df_plot,
+                x='AgeGroup',
+                color='Attrition',
+                title='Attrition by Age Group',
+                category_orders={"AgeGroup": ['18-24', '25-34', '35-44', '45-54', '55-64']},
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'},
+                barmode='group'
+            )
+            st.plotly_chart(fig5_px, use_container_width=True)
 
-            # --- NEW Plot: Job Satisfaction by MonthlyIncome (Binning and Stacked Bar Chart) ---
-            fig_new_jsat_income, ax_new_jsat_income = plt.subplots(figsize=(10, 6))
-            # Reuse MonthlyIncome_Bin from previous plot
-            jsat_by_monthlyincome = df_plot.groupby('MonthlyIncome_Bin')['JobSatisfaction'].mean() # Using mean for satisfaction
-            jsat_by_monthlyincome.plot(kind='bar', ax=ax_new_jsat_income, color='skyblue')
-            ax_new_jsat_income.set_title('Average Job Satisfaction by Monthly Income Range')
-            ax_new_jsat_income.set_ylabel('Average Job Satisfaction (1-4)')
-            ax_new_jsat_income.set_xticks(ax_new_jsat_income.get_xticks())
-            ax_new_jsat_income.set_xticklabels(ax_new_jsat_income.get_xticklabels(), rotation=45, ha='right')
-            st.pyplot(fig_new_jsat_income)
-            plt.close(fig_new_jsat_income)
-
+            # --- Plot 6: Attrition by Marital Status (Pie Chart) - Plotly Express ---
+            marital_status_attrition = df_plot.groupby(['MaritalStatus', 'Attrition']).size().reset_index(name='Count')
+            
+            fig6_px = px.pie(
+                marital_status_attrition,
+                values='Count',
+                names='MaritalStatus', # Main segments are MaritalStatus
+                color='MaritalStatus', # Color by MaritalStatus for distinct slice colors
+                hover_data=['Attrition', 'Count'], # Show Attrition info on hover
+                title='Attrition by Marital Status',
+                # color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}, # This is now less relevant for main slices
+                hole=0.3 # Donut chart for better aesthetics
+            )
+            fig6_px.update_traces(textposition='inside', textinfo='percent+label')
+            st.plotly_chart(fig6_px, use_container_width=True)
 
         with col_viz_B2:
-            # --- Plot 8: Attrition by TotalWorkingYears (Binning and Stacked Bar Chart) ---
-            fig8, ax8 = plt.subplots(figsize=(10, 6))
-            df_plot['TotalWorkingYears_Bin'] = pd.cut(df_plot['TotalWorkingYears'], bins=5, labels=['0-5', '6-10', '11-15', '16-20', '21+'])
-            attrition_by_totalworkingyears = df_plot.groupby('TotalWorkingYears_Bin')['Attrition'].value_counts(normalize=True).unstack() * 100
-            attrition_by_totalworkingyears.plot(kind='bar', stacked=True, ax=ax8, cmap='Pastel1')
-            ax8.set_title('Attrition by Total Working Years Range') # Clarified title
-            ax8.set_ylabel('Percentage')
-            ax8.set_xticks(ax8.get_xticks())
-            ax8.set_xticklabels(ax8.get_xticklabels(), rotation=45, ha='right')
-            ax8.legend(title='Attrition')
-            st.pyplot(fig8)
-            plt.close(fig8)
+            # --- Plot 7: Attrition by OverTime (Pie Chart) - Plotly Express ---
+            overtime_attrition = df_plot.groupby(['OverTime', 'Attrition']).size().reset_index(name='Count')
 
-            # --- Plot 9: New Hire Attrition vs. Experienced Employees ---
-            fig9, ax9 = plt.subplots(figsize=(8, 5))
-            df_plot['EmployeeCategory'] = df_plot['YearsAtCompany'].apply(lambda x: 'New Hire (<=1 Year)' if x <= 1 else 'Experienced (>1 Year)')
-            new_hire_category_attrition = df_plot.groupby('EmployeeCategory')['Attrition'].value_counts(normalize=True).unstack() * 100
-            new_hire_category_attrition.plot(kind='bar', stacked=True, ax=ax9, cmap='coolwarm')
-            ax9.set_title('Attrition Rate: New Hires vs. Experienced Employees')
-            ax9.set_ylabel('Percentage')
-            ax9.set_xticks(ax9.get_xticks())
-            ax9.set_xticklabels(ax9.get_xticklabels(), rotation=0)
-            ax9.legend(title='Attrition')
-            st.pyplot(fig9)
-            plt.close(fig9)
+            fig7_px = px.pie(
+                overtime_attrition,
+                values='Count',
+                names='OverTime', # Main segments are OverTime
+                color='OverTime', # Color by OverTime for distinct slice colors
+                hover_data=['Attrition', 'Count'], # Show Attrition info on hover
+                title='Attrition by OverTime',
+                # color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}, # Less relevant for main slices
+                hole=0.3
+            )
+            fig7_px.update_traces(textposition='inside', textinfo='percent+label')
+            st.plotly_chart(fig7_px, use_container_width=True)
 
-            # --- Plot 10: Distribution of Years At Company (Tenure) ---
-            fig10, ax10 = plt.subplots(figsize=(8, 5))
-            sns.histplot(df_plot['YearsAtCompany'], bins=10, kde=True, ax=ax10, color='lightgreen')
-            ax10.set_title('Distribution of Years At Company (Tenure)')
-            ax10.set_xlabel('Years at Company')
-            ax10.set_ylabel('Number of Employees')
-            st.pyplot(fig10)
-            plt.close(fig10)
+            # --- Plot 8: Monthly Income Distribution by Attrition (Histogram) - Plotly Express ---
+            fig8_px = px.histogram(
+                df_plot,
+                x='MonthlyIncome',
+                color='Attrition',
+                title='Monthly Income Distribution by Attrition',
+                marginal='box', # Add box plot on the margin
+                nbins=50, # Number of bins
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}
+            )
+            fig8_px.update_layout(xaxis_title="Monthly Income")
+            st.plotly_chart(fig8_px, use_container_width=True)
 
-
-        st.markdown("##### Job Role and Department Insights")
-
+        st.markdown("##### Other Key Distributions")
         col_viz_C1, col_viz_C2 = st.columns(2)
-        with col_viz_C1:
-            # --- Plot 11: Department-wise Average Monthly Income against Attrition ---
-            fig11, ax11 = plt.subplots(figsize=(10, 6))
-            dept_attr_income = df_plot.groupby(['Department', 'Attrition'])['MonthlyIncome'].mean().unstack()
-            dept_attr_income.plot(kind='bar', ax=ax11, cmap='viridis')
-            ax11.set_title('Department-wise Average Monthly Income vs Attrition')
-            ax11.set_ylabel('Average Monthly Income')
-            ax11.set_xticks(ax11.get_xticks())
-            ax11.set_xticklabels(ax11.get_xticklabels(), rotation=45, ha='right')
-            ax11.legend(title='Attrition')
-            st.pyplot(fig11)
-            plt.close(fig11)
 
-            # --- Plot 12: Department-wise Average Monthly Income against Job Satisfaction ---
-            fig12, ax12 = plt.subplots(figsize=(10, 6))
-            dept_jsat_income = df_plot.groupby(['Department', 'JobSatisfaction'])['MonthlyIncome'].mean().unstack()
-            dept_jsat_income.plot(kind='bar', ax=ax12, cmap='plasma')
-            ax12.set_title('Department-wise Average Monthly Income vs Job Satisfaction')
-            ax12.set_ylabel('Average Monthly Income')
-            ax12.set_xticks(ax12.get_xticks())
-            ax12.set_xticklabels(ax12.get_xticklabels(), rotation=45, ha='right')
-            ax12.legend(title='Job Satisfaction')
-            st.pyplot(fig12)
-            plt.close(fig12)
+        with col_viz_C1:
+            # --- Plot 9: Distance From Home Distribution by Attrition (Histogram) - Plotly Express ---
+            fig9_px = px.histogram(
+                df_plot,
+                x='DistanceFromHome',
+                color='Attrition',
+                title='Distance From Home Distribution by Attrition',
+                marginal='box',
+                nbins=20,
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}
+            )
+            fig9_px.update_layout(xaxis_title="Distance From Home (miles)")
+            st.plotly_chart(fig9_px, use_container_width=True)
 
         with col_viz_C2:
-            # --- Plot 13: Job Role-wise Average Monthly Income against Attrition ---
-            fig13, ax13 = plt.subplots(figsize=(12, 7))
-            job_attr_income = df_plot.groupby(['JobRole', 'Attrition'])['MonthlyIncome'].mean().unstack()
-            job_attr_income.plot(kind='bar', ax=ax13, cmap='viridis')
-            ax13.set_title('Job Role-wise Average Monthly Income vs Attrition')
-            ax13.set_ylabel('Average Monthly Income')
-            ax13.set_xticks(ax13.get_xticks())
-            ax13.set_xticklabels(ax13.get_xticklabels(), rotation=45, ha='right')
-            ax13.legend(title='Attrition')
-            st.pyplot(fig13)
-            plt.close(fig13)
+            # --- Plot 10: YearsAtCompany vs. MonthlyIncome by Attrition (Scatter Plot) - Plotly Express ---
+            fig10_px = px.scatter(
+                df_plot,
+                x='YearsAtCompany',
+                y='MonthlyIncome',
+                color='Attrition',
+                hover_data=['JobRole', 'Age'], # Show additional info on hover
+                title='Years At Company vs. Monthly Income by Attrition',
+                labels={'YearsAtCompany': 'Years At Company', 'MonthlyIncome': 'Monthly Income'},
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'},
+                template='plotly_white' # Use a clean template
+            )
+            st.plotly_chart(fig10_px, use_container_width=True)
+        
+        st.markdown("##### Satisfaction and Involvement")
+        col_viz_D1, col_viz_D2 = st.columns(2)
 
-            # --- Plot 14: Job Role-wise Average Monthly Income against Job Satisfaction ---
-            fig14, ax14 = plt.subplots(figsize=(12, 7))
-            job_jsat_income = df_plot.groupby(['JobRole', 'JobSatisfaction'])['MonthlyIncome'].mean().unstack()
-            job_jsat_income.plot(kind='bar', ax=ax14, cmap='plasma')
-            ax14.set_title('Job Role-wise Average Monthly Income vs Job Satisfaction')
-            ax14.set_ylabel('Average Monthly Income')
-            ax14.set_xticks(ax14.get_xticks())
-            ax14.set_xticklabels(ax14.get_xticklabels(), rotation=45, ha='right')
-            ax14.legend(title='Job Satisfaction')
-            st.pyplot(fig14)
-            plt.close(fig14)
+        with col_viz_D1:
+            # --- Plot 11: Job Satisfaction Distribution (Bar Chart) - Plotly Express ---
+            job_satisfaction_counts = df_plot['JobSatisfaction'].value_counts().sort_index().reset_index()
+            job_satisfaction_counts.columns = ['JobSatisfaction', 'Count']
+            
+            fig11_px = px.bar(
+                job_satisfaction_counts,
+                x='JobSatisfaction',
+                y='Count',
+                title='Job Satisfaction Distribution',
+                labels={'JobSatisfaction': 'Job Satisfaction Level (1-4)', 'Count': 'Number of Employees'},
+                color='JobSatisfaction',
+                color_continuous_scale=px.colors.sequential.Viridis # Use Viridis for numerical scale
+            )
+            fig11_px.update_layout(xaxis=dict(tickmode='array', tickvals=[1,2,3,4])) # Ensure specific ticks
+            st.plotly_chart(fig11_px, use_container_width=True)
+
+        with col_viz_D2:
+            # --- Plot 12: Environment Satisfaction Distribution (Bar Chart) - Plotly Express ---
+            env_satisfaction_counts = df_plot['EnvironmentSatisfaction'].value_counts().sort_index().reset_index()
+            env_satisfaction_counts.columns = ['EnvironmentSatisfaction', 'Count']
+
+            fig12_px = px.bar(
+                env_satisfaction_counts,
+                x='EnvironmentSatisfaction',
+                y='Count',
+                title='Environment Satisfaction Distribution',
+                labels={'EnvironmentSatisfaction': 'Environment Satisfaction Level (1-4)', 'Count': 'Number of Employees'},
+                color='EnvironmentSatisfaction',
+                color_continuous_scale=px.colors.sequential.Plasma # Using Plasma colormap
+            )
+            fig12_px.update_layout(xaxis=dict(tickmode='array', tickvals=[1,2,3,4]))
+            st.plotly_chart(fig12_px, use_container_width=True)
+
+        st.markdown("##### Income & Job Role Insights")
+        col_viz_E1, col_viz_E2 = st.columns(2)
+
+        with col_viz_E1:
+            # --- Plot 13: Job Role-wise Average Monthly Income against Attrition (Bar Chart) - Plotly Express ---
+            job_attr_income = df_plot.groupby(['JobRole', 'Attrition'])['MonthlyIncome'].mean().reset_index()
+            
+            fig13_px = px.bar(
+                job_attr_income,
+                x='JobRole',
+                y='MonthlyIncome',
+                color='Attrition',
+                barmode='group',
+                title='Job Role-wise Average Monthly Income vs Attrition',
+                labels={'MonthlyIncome': 'Average Monthly Income'},
+                color_discrete_map={'Yes': '#ff9999', 'No': '#66b3b3'}
+            )
+            fig13_px.update_layout(xaxis_tickangle=-45)
+            st.plotly_chart(fig13_px, use_container_width=True)
+
+        with col_viz_E2:
+            # --- Plot 14: Job Role-wise Average Monthly Income against Job Satisfaction (Bar Chart) - Plotly Express ---
+            # To plot against Job Satisfaction, we need to consider JobSatisfaction as a continuous variable or group it.
+            # Assuming you want average income for each JobRole, colored by average JobSatisfaction, or grouped by JS level.
+            # If JobSatisfaction is a discrete number (1,2,3,4), it's best treated as a category for grouping.
+            
+            # Let's group by JobRole and JobSatisfaction and take the mean MonthlyIncome
+            job_jsat_income = df_plot.groupby(['JobRole', 'JobSatisfaction'])['MonthlyIncome'].mean().reset_index()
+
+            fig14_px = px.bar(
+                job_jsat_income,
+                x='JobRole',
+                y='MonthlyIncome',
+                color='JobSatisfaction', # Color by JobSatisfaction level
+                barmode='group',
+                title='Job Role-wise Average Monthly Income vs Job Satisfaction',
+                labels={'MonthlyIncome': 'Average Monthly Income', 'JobSatisfaction': 'Job Satisfaction Level'},
+                color_continuous_scale=px.colors.sequential.Plasma # Use plasma colormap for satisfaction levels
+            )
+            fig14_px.update_layout(xaxis_tickangle=-45)
+            st.plotly_chart(fig14_px, use_container_width=True)
 
 
 st.markdown("---")

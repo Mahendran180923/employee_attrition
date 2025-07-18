@@ -1,114 +1,138 @@
 
-# 📊 Employee Attrition & Job Satisfaction Prediction Dashboard
+# Employee Attrition Analysis and Prediction  
 
-A complete end-to-end machine learning project that predicts **employee attrition** and **job satisfaction**, powered by interactive visualizations and model explainability in **Streamlit**.
-
----
-
-## 🚀 Features
-
-- 🔍 Attrition prediction using Logistic Regression.
-- 📈 Job satisfaction score prediction using Random Forest Regressor.
-- 🧠 Feature Engineering and Label/OneHot/Ordinal Encoding.
-- 📊 KPI Dashboard with satisfaction and attrition analysis.
-- 📁 Modular Python script structure.
-- 🎨 Interactive dashboard built using **Streamlit**.
-- 📦 Models and encoders are saved using Pickle for fast deployment.
+## 📑 Project Overview  
+This project focuses on analyzing and predicting employee attrition through machine learning techniques and interactive dashboards. It provides insights for HR teams to reduce turnover and improve employee retention strategies.  
 
 ---
 
-## 🗂️ Project Structure
+## 🔍 Problem Statement  
+Employee attrition causes increased costs and affects organizational productivity. This project analyzes HR datasets to understand the factors driving attrition and builds models to predict at-risk employees.
+
+---
+
+## 🚀 Features  
+✅ Data Cleaning & Preprocessing  
+✅ Exploratory Data Analysis (EDA)  
+✅ Feature Engineering  
+✅ Attrition Prediction (Classification Models)  
+✅ Job Satisfaction Prediction (Regression Models)  
+✅ Streamlit Dashboard for Insights  
+✅ Visualization of KPIs and Trends  
+
+---
+
+## 📂 Project Structure  
 
 ```
-├── attrition_model_training.py               # Train attrition prediction models
-├── satisfaction_model_training.py            # Train job satisfaction regression models
-├── data_preparation.py                       # Cleans, encodes and preprocesses the dataset
-├── data_visualization_analysis.py            # Generates KPI and visual plots
-├── streamlit_app.py                          # Streamlit web application
-├── Employee_Attrition.csv                    # Input dataset
-├── all_fitted_encoders.pkl                   # Saved LabelEncoder, OrdinalEncoder, ColumnTransformer
-├── attrition_logistic_regression.pkl         # Attrition model
-├── satisfaction_random_forest_regressor.pkl  # Satisfaction model
-├── attrition_model_features.pkl              # Attrition model's feature set
-├── satisfaction_model_features.pkl           # Satisfaction model's feature set
-├── processed_data.pkl                        # Processed dataset
-├── plots/
-│   ├── kpis.pkl
-│   ├── attrition_comparison_df.pkl
-│   └── satisfaction_comparison_df.pkl
-└── README.md                                 # Project documentation
+├── Employee_Attrition.csv                  # Raw dataset
+├── Employee_Attrition.docx                 # Project documentation
+├── data_preparation.py                    # Data cleaning, encoding, feature engineering
+├── data_visualization_analysis.py         # EDA, KPIs, visualizations
+├── attrition_model_training.py            # Classification models for attrition prediction
+├── satisfaction_model_training.py         # Regression models for job satisfaction prediction
+├── main.py                                 # MLflow experiment tracking (optional)
+├── streamlit_app.py                        # Streamlit dashboard
+├── requirements.txt                        # Python dependencies
+├── plots/                                  # Visual outputs and KPI files
+└── README.md                               # Project documentation
 ```
 
 ---
 
-## ⚙️ Getting Started
+## 📊 Models Used  
 
-### 1. Clone the Repository
+### Attrition Prediction (Classification)
+- Logistic Regression  
+- Decision Tree Classifier  
+- Random Forest Classifier  
 
-```bash
-git clone https://github.com/yourusername/employee-analytics-dashboard.git
-cd employee-analytics-dashboard
-```
+### Job Satisfaction Prediction (Regression)
+- Linear Regression  
+- Decision Tree Regressor  
+- Random Forest Regressor  
 
-### 2. Install Dependencies
+---
 
-Create a virtual environment (optional but recommended):
+## 🔧 Installation & Setup  
 
-```bash
-python -m venv .venv
-source .venv/Scripts/activate    # On Windows
-```
-
-Then install the required packages:
-
+### 1️⃣ Install Dependencies  
 ```bash
 pip install -r requirements.txt
 ```
 
-If `requirements.txt` is missing, use:
-
-```bash
-pip install pandas numpy scikit-learn matplotlib seaborn streamlit
-```
-
-### 3. Prepare the Data
-
+### 2️⃣ Run Data Preparation  
 ```bash
 python data_preparation.py
 ```
 
-### 4. Train the Models
+### 3️⃣ Generate Visualizations  
+```bash
+python data_visualization_analysis.py
+```
 
+### 4️⃣ Train Machine Learning Models  
 ```bash
 python attrition_model_training.py
 python satisfaction_model_training.py
 ```
 
-### 5. Generate KPIs and Charts
-
+Optional (MLflow Tracking):
 ```bash
-python data_visualization_analysis.py
+python main.py
 ```
 
-### 6. Run the Streamlit App
-
+### 5️⃣ Launch Streamlit App  
 ```bash
 streamlit run streamlit_app.py
 ```
 
 ---
 
-## 📌 Notes
-
-- All models, encoders, and visualizations are saved in `.pkl` format.
-- Make sure to run all training and preprocessing scripts before launching the app.
-- You can use `git add . && git commit -m "your message" && git push` to update changes to GitHub.
+## 📈 Key Results  
+- High accuracy in predicting attrition (>85%)  
+- Key drivers identified: Job Satisfaction, Overtime, Work-Life Balance  
+- Streamlit dashboard for actionable insights  
 
 ---
 
-## 👤 Author
+## 🛠️ Tools & Technologies  
+- Python  
+- Pandas / NumPy  
+- Scikit-learn  
+- Matplotlib / Seaborn  
+- Streamlit  
+- MLflow (optional)  
+
+---
+
+## 📊 Visual Outputs  
+- Attrition Trends by Department, Gender, Income  
+- KPI Dashboards  
+- Tenure Analysis & Retention Insights  
+
+---
+
+## 💡 Business Benefits  
+✅ Supports proactive HR strategies  
+✅ Reduces recruitment & onboarding costs  
+✅ Enhances employee satisfaction and retention  
+
+---
+
+## 🙋‍♂️ About Me  
 
 **Mahendran S**  
 MIS & Costing Executive | Aspiring Data Scientist  
 📧 mahendran.s15593@gmail.com  
 🔗 [LinkedIn](https://www.linkedin.com/in/mahendran-sudalai-00182b294)
+
+---
+
+## ⭐ Let's Connect!  
+If this project inspires you or you'd like to collaborate, feel free to connect on GitHub.  
+Open to feedback, contributions, and opportunities!
+
+---
+
+

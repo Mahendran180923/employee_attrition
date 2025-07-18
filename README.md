@@ -100,9 +100,8 @@ streamlit run streamlit_app.py
 - Python  
 - Pandas / NumPy  
 - Scikit-learn  
-- Matplotlib / Seaborn  
+- Matplotlib / Seaborn / Plotly
 - Streamlit  
-- MLflow (optional)  
 
 ---
 

@@ -344,9 +344,9 @@ if app_mode == "Prediction":
     st.header("Employee Details for Prediction")
 
     # Dropdown for Employee Number
-    employee_numbers = ['Manual Input'] + df_raw['EmployeeNumber'].unique().tolist()
+    employee_numbers = df_raw['EmployeeNumber'].unique().tolist()
     selected_employee_number = st.selectbox(
-        "Select Employee Number (or choose Manual Input):",
+        "Select Employee Number:",
         employee_numbers,
         index=0, # Default to Manual Input
         key="employee_num_selector"
@@ -838,5 +838,18 @@ elif app_mode == "Analysis Dashboard":
 
 st.markdown("---")
 st.markdown("Developed for Employee Attrition and Job Satisfaction Prediction Project.")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

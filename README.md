@@ -31,7 +31,6 @@ Employee attrition causes increased costs and affects organizational productivit
 ├── data_visualization_analysis.py         # EDA, KPIs, visualizations
 ├── attrition_model_training.py            # Classification models for attrition prediction
 ├── satisfaction_model_training.py         # Regression models for job satisfaction prediction
-├── main.py                                 # MLflow experiment tracking (optional)
 ├── streamlit_app.py                        # Streamlit dashboard
 ├── requirements.txt                        # Python dependencies
 ├── plots/                                  # Visual outputs and KPI files
